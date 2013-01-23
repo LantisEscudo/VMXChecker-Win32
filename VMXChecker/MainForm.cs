@@ -32,6 +32,9 @@ namespace VMXChecker
         private string videoFormat = "";
         private string videoFormatVersion = "";
         private string videoFormatProfile = "";
+        private string videoDAR = "";
+        private string videoScanType = "";
+        private string videoFPS = "";
         private string audioFormat = "";
         private string audioFormatVersion = "";
         private string audioFormatProfile = "";
@@ -141,33 +144,84 @@ namespace VMXChecker
         {
             correctVideoFormat = true;
             correctAudioFormat = true;
-            VideoInfoLabel.Text = videoFormat + "\n" + videoFormatVersion + "\n" + videoFormatProfile + "\n" + InputWidth.ToString() + "x" + InputHeight.ToString();
-            AudioInfoLabel.Text = audioFormat + "\n" + audioFormatVersion + "\n" + audioFormatProfile + "\n" + audioSamplingRate.ToString();
+            //VideoInfoLabel.Text = videoFormat + "\n" + videoFormatVersion + "\n" + videoFormatProfile + "\n" + InputWidth.ToString() + "x" + InputHeight.ToString();
+            //AudioInfoLabel.Text = audioFormat + "\n" + audioFormatVersion + "\n" + audioFormatProfile + "\n" + audioSamplingRate.ToString();
 
             if (videoFormat.Equals("MPEG Video") && videoFormatProfile.Equals("Main@Main") && videoFormatVersion.Equals("Version 2") && InputHeight == 480 && InputWidth == 720)
             {
+                VideoInfoLabel.Text = "Correct Video Format";
                 VideoInfoLabel.ForeColor = System.Drawing.Color.Green;
             }
             else
             {
+                String errorstring = "";
+
+                if (!videoFormat.Equals("MPEG Video") || !videoFormatVersion.Equals("Version 2"))
+                {
+                    errorstring += "Not MPEG-2 Video\n";
+                }
+                else if (!videoFormatProfile.Equals("Main@Main"))
+                {
+                    errorstring += "Incorrect MPEG-2 Profile";
+                }
+
+                if (!videoDAR.Equals("4:3"))
+                {
+                    errorstring += "Incorrect Aspect Ratio\n";
+                }
+
+                if (!videoScanType.Equals("Interlaced"))
+                {
+                    errorstring += "Incorrect Scan Mode\n";
+                }
+
+                if (!videoFPS.Equals("29.970"))
+                {
+                    errorstring += "Incorrect Frame Rate\n";
+                }
+
+                if (InputHeight != 480 || InputWidth != 720)
+                {
+                    errorstring += "Incorrect Resolution";
+                }
+
+                VideoInfoLabel.Text = errorstring;
                 VideoInfoLabel.ForeColor = System.Drawing.Color.Red;
                 correctVideoFormat = false;
-                MessageLabel.Text = "There is a problem with this file.  Click the Fix button to correct the problem.";
-                MessageLabel.ForeColor = System.Drawing.Color.Red;
-                FixButton.Enabled = true;
             }
 
             if (audioFormat.Equals("MPEG Audio") && audioFormatVersion.Equals("Version 1") && audioFormatProfile.Equals("Layer 2") && audioSamplingRate == 48000)
             {
+                AudioInfoLabel.Text = "Correct Audio Format";
                 AudioInfoLabel.ForeColor = System.Drawing.Color.Green;
             }
             else
             {
+                String errorstring = "";
+                if (!audioFormat.Equals("MPEG Audio"))
+                {
+                    if (audioFormat.Equals("AC-3"))
+                    {
+                        errorstring += "Dolby Digital Audio\n";
+                    }
+                    else
+                    {
+                        errorstring += "Incorrect Audio Format\n";
+                    }
+                }
+
+                if (!audioFormatProfile.Equals("Layer 2"))
+                {
+                    errorstring += "Incorrect MPEG Audio Profile \n";
+                }
+
+                if (audioSamplingRate != 48000)
+                {
+                    errorstring += "Incorrect Sampling Rate";
+                }
+
                 AudioInfoLabel.ForeColor = System.Drawing.Color.Red;
                 correctAudioFormat = false;
-                MessageLabel.Text = "There is a problem with this file.  Click the Fix button to correct the problem.";
-                MessageLabel.ForeColor = System.Drawing.Color.Red;
-                FixButton.Enabled = true;
             }
 
             if (correctAudioFormat && correctVideoFormat)
@@ -175,6 +229,12 @@ namespace VMXChecker
                 MessageLabel.Text = "There are no problems with this file.";
                 MessageLabel.ForeColor = System.Drawing.Color.Green;
                 FixButton.Enabled = false;
+            }
+            else
+            {
+                MessageLabel.Text = "There is a problem with this file.  Click the Fix button to correct the problem.";
+                MessageLabel.ForeColor = System.Drawing.Color.Red;
+                FixButton.Enabled = true;
             }
         }
 
