@@ -8,13 +8,13 @@ is the correct format for sharing on the Vermont Media Exchange system for
 public access stations, and ffmpeg for reencoding files that are not compliant.
 
 For reference, the VMX system requirements:
-Video:
-MPEG-2
-Main@Main profile
-4:3 DAR
-Interlaced video (field order doesn't matter)
-720x480
+*Video:
+** MPEG-2
+** Main@Main profile
+** 4:3 DAR
+** Interlaced video (field order doesn't matter)
+** 720x480
 
-Audio:
-MPEG-1, Layer 2
-48000 Hz sampling rate
+* Audio:
+** MPEG-1, Layer 2
+** 48000 Hz sampling rate
