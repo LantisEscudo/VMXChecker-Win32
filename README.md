@@ -5,7 +5,7 @@ VMX verification and repair application for Windows
 
 This is a simple wrapper GUI around MediaInfo for verifying that a video file
 is the correct format for sharing on the Vermont Media Exchange system for
-public access stations, and ffmpeg for reencoding files that are not compliant.
+public access stations, and FFmpeg for reencoding files that are not compliant.
 
 For reference, the VMX system requirements:
 
