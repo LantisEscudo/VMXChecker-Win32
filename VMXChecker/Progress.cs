@@ -33,7 +33,7 @@ namespace VMXChecker
             Program.main_form.ShowInTaskbar = false;
             progressBar1.Maximum = frames;
 
-            lineParse = new Regex("frame=.*?(\\d+\\.\\d*).*fps=.*?(\\d*)", RegexOptions.None);
+            lineParse = new Regex("frame=\\s*?(\\d+\\.\\d*).*fps=.*?(\\d*)", RegexOptions.None);
 
 
         }
@@ -65,17 +65,21 @@ namespace VMXChecker
         {
             if (log.Contains("frame=")) //video progress
             {
-                Match m = lineParse.Match(log);
+                Match m = Regex.Match(log, @"frame=\s*?(\d+\.\d*).*fps=.*?(\d*)", RegexOptions.None);
                 if (m.Success)
                 {
-                    frames_completed = int.Parse(m.Groups[0].Captures[0].Value);
+                    Console.WriteLine("Matched pattern.");
+                    frames_completed = int.Parse(m.Groups[1].Captures[0].Value);
                     progressBar1.Value = frames_completed;
                     label2.Text = "Progress: " + frames_completed + "/" + frames;
-                    label1.Text = "FPS: " + m.Groups[0].Captures[1].Value;
+                    label1.Text = "FPS: " + m.Groups[1].Captures[1].Value;
                     completeLabel.Text = "Complete: " + (int)(frames_completed / frames) + "%";
                     this.Text = "Complete: " + (int)(frames_completed / frames) + "%";
                 }
-                
+                logBuilder.Append(log);
+                textBoxLog.Text = logBuilder.ToString();
+                textBoxLog.SelectionStart = textBoxLog.Text.Length;
+                textBoxLog.ScrollToCaret();
             }
             else if (log.StartsWith("video:")) //encoding finished
             {

@@ -208,9 +208,9 @@ namespace VMXChecker
                     {
                         errorstring += "Incorrect Audio Format\n";
                     }
-                }
-
-                if (!audioFormatProfile.Equals("Layer 2"))
+                } 
+                
+                else if (!audioFormatProfile.Equals("Layer 2"))
                 {
                     errorstring += "Incorrect MPEG Audio Profile \n";
                 }
@@ -220,6 +220,7 @@ namespace VMXChecker
                     errorstring += "Incorrect Sampling Rate";
                 }
 
+                AudioInfoLabel.Text = errorstring;
                 AudioInfoLabel.ForeColor = System.Drawing.Color.Red;
                 correctAudioFormat = false;
             }

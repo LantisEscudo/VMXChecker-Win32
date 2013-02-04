@@ -65,6 +65,7 @@
             this.buttonCancel.TabIndex = 2;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
+            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
             // completeLabel
             // 
@@ -111,6 +112,8 @@
             this.Controls.Add(this.progressBar1);
             this.Name = "Progress";
             this.Text = "Progress";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Progress_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Progress_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 
