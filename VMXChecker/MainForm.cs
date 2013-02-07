@@ -127,6 +127,14 @@ namespace VMXChecker
             }
         }
 
+        public void Encode_Return()
+        {
+            inFileBox.Text = outputfilename;
+            inputfilename = outputfilename;
+            media_info();
+            check_file();
+        }
+
         private void BrowseButton_Click(object sender, EventArgs e)
         {
             openFileDialogInput.Filter = "MPEG Files(*.mpg, *.mpeg)|*.mpg;*.mpeg";
@@ -248,12 +256,26 @@ namespace VMXChecker
                 return;
             }
 
+            //generate output filename
+            if (inputfilename.ToLower().EndsWith(".mpg"))
+            {
+                outputfilename = inputfilename.Remove(inputfilename.Length - 4, 4) + "-VMX.mpg";
+            }
+            else if (inputfilename.ToLower().EndsWith(".mpeg"))
+            {
+                outputfilename = inputfilename.Remove(inputfilename.Length - 5, 5) + "-VMX.mpeg";
+            }
+            else
+            {
+                outputfilename = inputfilename + "-VMX.mpg";
+            }
+
             //check if output file exists
-            /*if (System.IO.File.Exists(textBoxMP4.Text) == true)
+            if (System.IO.File.Exists(outputfilename) == true)
             {
                 if (MessageBox.Show("The output file already exists.\nWould you like to overwrite it?", "Warning", MessageBoxButtons.YesNo) == DialogResult.No)
                     return;
-            }*/
+            }
 
             //start a new thread and run the apps
             t = new Thread(new ThreadStart(this.run_stuff));
@@ -312,7 +334,7 @@ namespace VMXChecker
 
             cmdline += ffmpeg + " ";
 
-            cmdline += "-i \"" + inputfilename + "\" " + "-target ntsc-dvd ";
+            cmdline += "-i \"" + inputfilename + "\" " + "-y -target ntsc-dvd ";
 
             if (correctVideoFormat)
             {
@@ -326,19 +348,6 @@ namespace VMXChecker
             else
             {
                 cmdline += "-acodec mp2 -b:a 192k ";
-            }
-
-            if (inputfilename.ToLower().EndsWith(".mpg"))
-            {
-                outputfilename = inputfilename.Remove(inputfilename.Length - 4, 4) + "-VMX.mpg";
-            }
-            else if (inputfilename.ToLower().EndsWith(".mpeg"))
-            {
-                outputfilename = inputfilename.Remove(inputfilename.Length - 5, 5) + "-VMX.mpeg";
-            }
-            else
-            {
-                outputfilename = inputfilename + "-VMX.mpg";
             }
 
             cmdline += "\"" + outputfilename + "\"";

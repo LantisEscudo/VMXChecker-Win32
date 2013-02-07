@@ -59,27 +59,31 @@ namespace VMXChecker
                 if (MessageBox.Show("Are you sure you want to stop the encode?", "Warning", MessageBoxButtons.YesNo) == DialogResult.No)
                     e.Cancel = true;
             }
+            else
+            {
+                Program.main_form.Encode_Return();
+            }
         }
 
         public void updateProgress(string log)
         {
             if (log.Contains("frame=")) //video progress
             {
-                Match m = Regex.Match(log, @"frame=\s*?(\d+\.\d*).*fps=.*?(\d*)", RegexOptions.None);
+                Match m = Regex.Match(log, @"frame=\s*?(\d+).*fps=.*?(\d*\.?\d*)", RegexOptions.None);
                 if (m.Success)
                 {
                     Console.WriteLine("Matched pattern.");
                     frames_completed = int.Parse(m.Groups[1].Captures[0].Value);
+                    if (frames_completed > progressBar1.Maximum)
+                    {
+                        frames_completed = progressBar1.Maximum;
+                    }
                     progressBar1.Value = frames_completed;
                     label2.Text = "Progress: " + frames_completed + "/" + frames;
-                    label1.Text = "FPS: " + m.Groups[1].Captures[1].Value;
+                    label1.Text = "FPS: " + m.Groups[2].Captures[0].Value;
                     completeLabel.Text = "Complete: " + (int)(frames_completed / frames) + "%";
                     this.Text = "Complete: " + (int)(frames_completed / frames) + "%";
                 }
-                logBuilder.Append(log);
-                textBoxLog.Text = logBuilder.ToString();
-                textBoxLog.SelectionStart = textBoxLog.Text.Length;
-                textBoxLog.ScrollToCaret();
             }
             else if (log.StartsWith("video:")) //encoding finished
             {
