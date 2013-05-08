@@ -25,7 +25,6 @@ namespace VMXChecker
         string ffmpeg = "ffmpeg.exe";
         String inputfilename = "";
         String outputfilename = "";
-        //private int checkUpdates = 1; // 1 = true
         public int frames = 0;
         private int InputWidth = 0;
         private int InputHeight = 0;
@@ -70,10 +69,8 @@ namespace VMXChecker
 
         private void inFileBox_DragEnter(object sender, DragEventArgs e)
         {
-            // make sure they're actually dropping files (not text or anything else)
+            // Verify a file is being dropped (not text, image, etc.)
             if (e.Data.GetDataPresent(DataFormats.FileDrop, false) == true)
-                // allow them to continue
-                // (without this, the cursor stays a "NO" symbol
                 e.Effect = DragDropEffects.All;
         }
 
@@ -81,7 +78,7 @@ namespace VMXChecker
         {
             string[] files_drop = (string[])e.Data.GetData(DataFormats.FileDrop);
 
-            if (files_drop[0].EndsWith(".mpg") || files_drop[0].EndsWith(".mpeg"))
+            if (files_drop[0].EndsWith(".mpg") || files_drop[0].EndsWith(".mpeg") || files_drop[0].EndsWith(".mp4"))
             {
                 inFileBox.Text = files_drop[0];
                 inputfilename = files_drop[0];
@@ -137,7 +134,7 @@ namespace VMXChecker
 
         private void BrowseButton_Click(object sender, EventArgs e)
         {
-            openFileDialogInput.Filter = "MPEG Files(*.mpg, *.mpeg)|*.mpg;*.mpeg";
+            openFileDialogInput.Filter = "MPEG Files(*.mpg, *.mpeg), MPEG4 Files (*.mp4)|*.mpg;*.mpeg;*.mp4";
             if (openFileDialogInput.ShowDialog() == DialogResult.OK)
             {
                 inputfilename = openFileDialogInput.FileName;
@@ -249,15 +246,15 @@ namespace VMXChecker
 
         private void FixButton_Click(object sender, EventArgs e)
         {
-            //check existance of all programs
+            // Verify ffmpeg is in the directory
             if (System.IO.File.Exists(path + "\\" + ffmpeg) == false)
             {
                 MessageBox.Show(ffmpeg + " was not found.\nMake sure that it is located in the same folder as this application.", "Error");
                 return;
             }
 
-            //generate output filename
-            if (inputfilename.ToLower().EndsWith(".mpg"))
+            // Generate output filename
+            if (inputfilename.ToLower().EndsWith(".mpg") || inputfilename.ToLower().EndsWith(".mp4"))
             {
                 outputfilename = inputfilename.Remove(inputfilename.Length - 4, 4) + "-VMX.mpg";
             }
@@ -270,29 +267,29 @@ namespace VMXChecker
                 outputfilename = inputfilename + "-VMX.mpg";
             }
 
-            //check if output file exists
+            // Check if output file exists
             if (System.IO.File.Exists(outputfilename) == true)
             {
                 if (MessageBox.Show("The output file already exists.\nWould you like to overwrite it?", "Warning", MessageBoxButtons.YesNo) == DialogResult.No)
                     return;
             }
 
-            //start a new thread and run the apps
+            // Start a new thread and run the encoder
             t = new Thread(new ThreadStart(this.run_stuff));
             t.Start();
             canceled = false;
-            //open the progress window
+            // Open the progress window
             progress_form = new Progress();
             progress_form.ShowDialog();
         }
 
         private void run_stuff()
         {
-            //break commands into lines
+            // Break commands into parameters
             string CMD = buildCommand();
             char[] breakup = { ' ' };
 
-            //execute each line
+            // Execute the command
             string[] line_parts = CMD.Split(breakup, 2);
             string line_command = line_parts[0].ToString();
             string line_args = line_parts[1].ToString();
@@ -306,9 +303,7 @@ namespace VMXChecker
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.RedirectStandardError = true;
 
-            //progress_form.state = 2;
             p.Start();
-            //set_priority(thePriority);
             string readError;
             while ((readError = p.StandardError.ReadLine()) != null)
                 Invoke(new updateProgressDelegate(this.updateProgress), readError);
@@ -339,6 +334,17 @@ namespace VMXChecker
             if (correctVideoFormat)
             {
                 cmdline += "-vcodec copy ";
+            }
+            else
+            {
+                if (videoDAR.Equals("16:9"))
+                {
+                    cmdline += "-vf scale=720:360,pad=720:480:0:60";
+                }
+                if (videoScanType.Equals("Progressive"))
+                {
+                    cmdline += "-flags +ildct+ilme -top 0";
+                }
             }
 
             if (correctAudioFormat)

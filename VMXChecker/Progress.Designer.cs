@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Progress));
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.textBoxLog = new System.Windows.Forms.TextBox();
             this.buttonCancel = new System.Windows.Forms.Button();
@@ -110,6 +111,7 @@
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.progressBar1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Progress";
             this.Text = "Progress";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Progress_FormClosing);
